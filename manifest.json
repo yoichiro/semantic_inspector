@@ -1,0 +1,24 @@
+{
+    "manifest_version": 2,
+    "name": "Semantic inspector",
+    "description": "__MSG_extDescription__",
+    "version": "1.0.0",
+    "icons": {
+        "48": "./icon48.png",
+        "128": "./icon128.png"
+    },
+    "background": {
+        "page": "./background.html"
+    },
+     "page_action": {
+         "default_icon": "icon19.png",
+       "default_popup": "popup.html"
+    },
+    "permissions": [
+        "tabs",
+        "http://*/*",
+        "https://*/*"
+    ],
+    "default_locale": "en",
+    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+}
