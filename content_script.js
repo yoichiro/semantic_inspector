@@ -1,9 +1,37 @@
+var ItemPropValues = function() {
+    this.initialize();
+};
+
+ItemPropValues.prototype = {
+    sources: [
+        [["meta"], "content"],
+        [["audio", "embed", "iframe", "img", "source", "track", "video"], "src"],
+        [["a", "area", "link"], "href"],
+        [["object"], "data"],
+        [["time"], "datetime"]
+    ],
+    initialize: function() {
+        this.values = {};
+        for (var i = 0; i < this.sources.length; i++) {
+            var tags = this.sources[i][0];
+            var attribute = this.sources[i][1];
+            for (var j = 0; j < tags.length; j++) {
+                this.values[tags[j]] = attribute;
+            }
+        }
+    },
+    getAttributeName: function(tagName) {
+        return this.values[tagName];
+    }
+};
+
 var CS = function() {
     this.initialize();
 };
 
 CS.prototype = {
     initialize: function() {
+        this.itemPropValues = new ItemPropValues();
     },
     start: function() {
         this.traversedElements = new Array();
@@ -57,15 +85,11 @@ CS.prototype = {
                 } else {
                     if (currentItem) {
                         var tagName = element.tagName.toLowerCase();
-                        if (tagName == "a" || tagName == "link") {
+                        var attributeName =
+                            this.itemPropValues.getAttributeName(tagName);
+                        if (attributeName) {
                             this.addPropertyValue(currentItem, itemPropValue,
-                                                  element.getAttribute("href"));
-                        } else if (tagName == "img") {
-                            this.addPropertyValue(currentItem, itemPropValue,
-                                                  element.getAttribute("src"));
-                        } else if (tagName == "meta") {
-                            this.addPropertyValue(currentItem, itemPropValue,
-                                                  element.getAttribute("content"));
+                                                  element.getAttribute(attributeName));
                         } else {
                             var text = this.getElementText(element, "");
                             this.addPropertyValue(currentItem, itemPropValue, text);
