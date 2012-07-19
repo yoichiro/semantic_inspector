@@ -40,7 +40,19 @@ Popup.prototype = {
 
         var itemTypeDiv = this.createElement("div", itemMetaDiv);
         itemTypeDiv.addClassName("item_type");
-        itemTypeDiv.appendChild(document.createTextNode(item.type));
+        if (item.type) {
+            itemTypeDiv.appendChild(document.createTextNode(item.type));
+        } else {
+            itemTypeDiv.appendChild(document.createTextNode("Type not specified"));
+            itemTypeDiv.addClassName("item_type_unknown");
+        }
+
+        if (item.id) {
+            this.appendBrNode(itemMetaDiv);
+            var itemIdDiv = this.createElement("div", itemMetaDiv);
+            itemIdDiv.addClassName("item_id");
+            itemIdDiv.appendChild(document.createTextNode(item.id));
+        }
 
         this.appendBrNode(itemMetaDiv);
 

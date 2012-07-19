@@ -43,6 +43,16 @@ div.item_meta div.item_type {
     font-weight: bold;
 }
 
+div.item_meta div.item_type_unknown {
+    color: lightgray;
+}
+
+div.item_meta div.item_id {
+    margin-left: 22px;
+    color: gray;
+    font-size: 12px;
+}
+
 div.property {
     margin-left: 16px;
 }

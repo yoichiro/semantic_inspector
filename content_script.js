@@ -31,14 +31,15 @@ CS.prototype = {
         var itemProp = attributes["itemprop"];
         var itemType = attributes["itemtype"];
         var itemRef = attributes["itemref"];
+        var itemId = attributes["itemid"];
         var newItem = null;
         if (itemScope) {
             newItem = this.createItem();
+            if (itemId) {
+                newItem.id = itemId.nodeValue;
+            }
             if (itemType) {
                 newItem.type = itemType.nodeValue;
-            } else {
-                // should throw exception
-                console.log("should throw exception - 1");
             }
         }
         if (itemProp) {
@@ -101,7 +102,8 @@ CS.prototype = {
             if (name == "itemscope"
                 || name == "itemprop"
                 || name == "itemtype"
-                || name == "itemref") {
+                || name == "itemref"
+                || name == "itemid") {
                 result[name] = attribute;
             }
         }
@@ -109,6 +111,7 @@ CS.prototype = {
     },
     createItem: function() {
         return {
+            id: null,
             type: null,
             properties: {}
         };
