@@ -37,6 +37,7 @@ Popup.prototype = {
 
         var itemImg = this.createElement("img", itemMetaDiv);
         itemImg.src = "./item16.png";
+        itemImg.title = "Item";
 
         var itemTypeDiv = this.createElement("div", itemMetaDiv);
         itemTypeDiv.addClassName("item_type");
@@ -59,49 +60,59 @@ Popup.prototype = {
         var propertiesDiv = this.createElement("div", itemDiv);
         propertiesDiv.addClassName("properties");
 
-        for (var propertyName in item.properties) {
-            var propertyValues = item.properties[propertyName];
+        var propertyName;
+        for (propertyName in item.properties) {
+            this.renderProperty(item, item.properties, propertyName,
+                                propertiesDiv, "./property16.png", "itemprop");
+        }
+        for (propertyName in item.reverses) {
+            this.renderProperty(item, item.reverses, propertyName,
+                                propertiesDiv, "./reverse16.png", "itemprop-reverse");
+        }
+    },
+    renderProperty: function(item, properties, propertyName, propertiesDiv, icon, title) {
+        var propertyValues = properties[propertyName];
 
-            for (var i = 0; i < propertyValues.length; i++) {
-                var propertyValue = propertyValues[i];
+        for (var i = 0; i < propertyValues.length; i++) {
+            var propertyValue = propertyValues[i];
 
-                var propertyDiv = this.createElement("div", propertiesDiv);
-                propertyDiv.addClassName("property");
+            var propertyDiv = this.createElement("div", propertiesDiv);
+            propertyDiv.addClassName("property");
 
-                var propertyImg = this.createElement("img", propertyDiv);
-                propertyImg.src = "./property16.png";
+            var propertyImg = this.createElement("img", propertyDiv);
+            propertyImg.src = icon;
+            propertyImg.title = title;
 
-                var propertyNameDiv = this.createElement("div", propertyDiv);
-                propertyNameDiv.addClassName("property_name");
-                propertyNameDiv.appendChild(document.createTextNode(propertyName));
+            var propertyNameDiv = this.createElement("div", propertyDiv);
+            propertyNameDiv.addClassName("property_name");
+            propertyNameDiv.appendChild(document.createTextNode(propertyName));
 
-                this.appendBrNode(propertyDiv);
+            this.appendBrNode(propertyDiv);
 
-                if (Object.isString(propertyValue)) {
-                    var propertyValueDiv = this.createElement("div", propertyDiv);
-                    propertyValueDiv.addClassName("property_value");
+            if (Object.isString(propertyValue)) {
+                var propertyValueDiv = this.createElement("div", propertyDiv);
+                propertyValueDiv.addClassName("property_value");
 
-                    if (this.isUrlString(propertyValue)) {
-                        var propertyValueA = this.createElement("a", propertyValueDiv);
-                        propertyValueA.href = propertyValue;
-                        propertyValueA.target = "_blank";
-                        var propertyValueText = document.createTextNode(propertyValue);
-                        propertyValueA.appendChild(propertyValueText);
+                if (this.isUrlString(propertyValue)) {
+                    var propertyValueA = this.createElement("a", propertyValueDiv);
+                    propertyValueA.href = propertyValue;
+                    propertyValueA.target = "_blank";
+                    var propertyValueText = document.createTextNode(propertyValue);
+                    propertyValueA.appendChild(propertyValueText);
 
-                        if (this.isImageUrlString(propertyValue)) {
-                            var propertyValueImg = this.createElement("img", propertyValueDiv);
-                            propertyValueImg.src = propertyValue;
-                            propertyValueImg.width = 200;
+                    if (this.isImageUrlString(propertyValue)) {
+                        var propertyValueImg = this.createElement("img", propertyValueDiv);
+                        propertyValueImg.src = propertyValue;
+                        propertyValueImg.width = 200;
 
-                            this.appendBrNode(propertyDiv);
-                        }
-                    } else {
-                        var propertyValueText = document.createTextNode(propertyValue);
-                        propertyValueDiv.appendChild(propertyValueText);
+                        this.appendBrNode(propertyDiv);
                     }
                 } else {
-                    this.renderItem(propertyValue, propertyDiv, true);
+                    var propertyValueText = document.createTextNode(propertyValue);
+                    propertyValueDiv.appendChild(propertyValueText);
                 }
+            } else {
+                this.renderItem(propertyValue, propertyDiv, true);
             }
         }
     },
