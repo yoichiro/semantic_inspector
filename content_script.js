@@ -57,6 +57,7 @@ CS.prototype = {
         var attributes = this.retrieveHtmlMicrodataAttributes(element);
         var itemScope = attributes["itemscope"];
         var itemProp = attributes["itemprop"];
+        var itemPropReverse = attributes["itemprop-reverse"];
         var itemType = attributes["itemtype"];
         var itemRef = attributes["itemref"];
         var itemId = attributes["itemid"];
@@ -71,35 +72,11 @@ CS.prototype = {
             }
         }
         if (itemProp) {
-            var itemPropValues = itemProp.nodeValue.split(" ");
-            for (var i = 0; i < itemPropValues.length; i++) {
-                var itemPropValue = itemPropValues[i];
-                if (itemScope) {
-                    if (currentItem) {
-                        this.addPropertyValue(currentItem, itemPropValue, newItem);
-                        currentItem = newItem;
-                    } else {
-                        // should throw exception
-                        console.log("should throw exception - 2");
-                    }
-                } else {
-                    if (currentItem) {
-                        var tagName = element.tagName.toLowerCase();
-                        var attributeName =
-                            this.itemPropValues.getAttributeName(tagName);
-                        if (attributeName) {
-                            this.addPropertyValue(currentItem, itemPropValue,
-                                                  element.getAttribute(attributeName));
-                        } else {
-                            var text = this.getElementText(element, "");
-                            this.addPropertyValue(currentItem, itemPropValue, text);
-                        }
-                    } else {
-                        // should throw exception
-                        console.log("should throw exception - 3");
-                    }
-                }
-            }
+            this.addItemProperty(itemProp, itemScope, currentItem,
+                                 newItem, element, this.addPropertyValue);
+        } else if (itemPropReverse) {
+            this.addItemProperty(itemPropReverse, itemScope, currentItem,
+                                 newItem, element, this.addPropertyReverseValue);
         } else {
             if (itemScope) {
                 items.push(newItem);
@@ -117,6 +94,37 @@ CS.prototype = {
         }
         return currentItem;
     },
+    addItemProperty: function(itemProp, itemScope, currentItem, newItem, element, addFunc) {
+        var itemPropValues = itemProp.nodeValue.split(" ");
+        for (var i = 0; i < itemPropValues.length; i++) {
+            var itemPropValue = itemPropValues[i];
+            if (itemScope) {
+                if (currentItem) {
+                    addFunc(currentItem, itemPropValue, newItem);
+                    currentItem = newItem;
+                } else {
+                    // should throw exception
+                    console.log("should throw exception - 2");
+                }
+            } else {
+                if (currentItem) {
+                    var tagName = element.tagName.toLowerCase();
+                    var attributeName =
+                            this.itemPropValues.getAttributeName(tagName);
+                    if (attributeName) {
+                        addFunc(currentItem, itemPropValue,
+                                element.getAttribute(attributeName));
+                    } else {
+                        var text = this.getElementText(element, "");
+                        addFunc(currentItem, itemPropValue, text);
+                    }
+                } else {
+                    // should throw exception
+                    console.log("should throw exception - 3");
+                }
+            }
+        }
+    },
     retrieveHtmlMicrodataAttributes: function(element) {
         var result = {};
         var attributes = element.attributes;
@@ -125,6 +133,7 @@ CS.prototype = {
             var name = attribute.nodeName;
             if (name == "itemscope"
                 || name == "itemprop"
+                || name == "itemprop-reverse"
                 || name == "itemtype"
                 || name == "itemref"
                 || name == "itemid") {
@@ -137,7 +146,8 @@ CS.prototype = {
         return {
             id: null,
             type: null,
-            properties: {}
+            properties: {},
+            reverses: {}
         };
     },
     getElementText: function(element, result) {
@@ -146,7 +156,7 @@ CS.prototype = {
             var child = children[i];
             if (child.nodeType == 3) {
                 result += child.nodeValue;
-            } else if (child.nodeType = 1) {
+            } else if (child.nodeType == 1) {
                 result = this.getElementText(child, result);
             }
         }
@@ -159,6 +169,14 @@ CS.prototype = {
         }
         values.push(value);
         item.properties[name] = values;
+    },
+    addPropertyReverseValue: function(item, name, value) {
+        var values = item.reverses[name];
+        if (!values) {
+            values = new Array();
+        }
+        values.push(value);
+        item.reverses[name] = values;
     },
     checkDoneElement: function(element) {
         for (var i = 0; i < this.traversedElements.length; i++) {
