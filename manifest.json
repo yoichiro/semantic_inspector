@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Semantic inspector",
     "description": "__MSG_extDescription__",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "icons": {
         "48": "./icon48.png",
         "128": "./icon128.png"

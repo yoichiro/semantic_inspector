@@ -74,9 +74,11 @@ CS.prototype = {
         if (itemProp) {
             this.addItemProperty(itemProp, itemScope, currentItem,
                                  newItem, element, this.addPropertyValue);
+            currentItem = newItem;
         } else if (itemPropReverse) {
             this.addItemProperty(itemPropReverse, itemScope, currentItem,
                                  newItem, element, this.addPropertyReverseValue);
+            currentItem = newItem;
         } else {
             if (itemScope) {
                 items.push(newItem);
